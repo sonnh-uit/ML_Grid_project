@@ -1,6 +1,5 @@
 version: '3'
 services:
-
   feature_engineering:
     build:
       context: ./feature_engineering
@@ -12,3 +11,7 @@ services:
       - ./data:/app/data
     working_dir: /app
     command: ["python3", "data_craw.py"]
+
+volumes:
+  data:
+    driver: local

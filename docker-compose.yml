@@ -1,0 +1,14 @@
+version: '3'
+services:
+
+  feature_engineering:
+    build:
+      context: ./feature_engineering
+      dockerfile: Dockerfile
+    ports:
+      - 8080:80
+    volumes:
+      - ./feature_engineering/app:/app
+      - ./data:/app/data
+    working_dir: /app
+    command: ["python3", "data_craw.py"]

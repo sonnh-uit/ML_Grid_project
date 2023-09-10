@@ -1,6 +1,31 @@
 version: '3'
 services:
+  # mysql:
+  #   image: mysql:latest
+  #   container_name: mysql-container
+  #   # ports:
+  #   #   - 33060:3306
+  #   expose:
+  #     - 3306
+  #   restart: unless-stopped
+  #   environment:
+  #     MYSQL_ALLOW_EMPTY_PASSWORD: yes
+  #     MYSQL_ROOT_PASSWORD: asWS6PGCB5CansiY
+  #     MYSQL_DATABASE: energy_forecast
+  #     MYSQL_USER: mlops
+  #     MYSQL_PASSWORD: asWS6PGCB5CansiY
+  #   healthcheck:
+  #     test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+  #     interval: 30s
+  #     timeout: 5s
+  #     retries: 3
+  #   volumes:
+  #     - ./data/db:/data/db
+  #     - ./data/mysql-log:/var/log/mysql
+  #   networks:
+  #     - fe-nic
   feature_engineering:
+    container_name: feature_engineering
     build:
       context: ./feature_engineering
       dockerfile: Dockerfile
@@ -10,8 +35,18 @@ services:
       - ./feature_engineering/app:/app
       - ./data:/app/data
     working_dir: /app
-    command: ["python3", "data_craw.py"]
+    command: ["python3", "main.py"]
+    # command: ["tail", "-f", "/dev/null"]
+    # depends_on:
+    #   mysql:
+    #     condition: service_healthy
+    networks:
+      - fe-nic
 
 volumes:
   data:
     driver: local
+  dags:
+    driver: local
+networks:
+  fe-nic:

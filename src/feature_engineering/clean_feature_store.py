@@ -3,13 +3,11 @@ import hopsworks
 
 import feature_store
 
+# import utils
+from utils import utils
 
 def clean():
-    project = hopsworks.login(
-        api_key_value=load_env_vars()["FS_API_KEY"],
-        project=load_env_vars()["FS_PROJECT_NAME"],
-    )
-    fs = project.get_feature_store()
+    fs = utils.hopsworks_feature_login()
 
     print("Deleting feature views and training datasets...")
     try:

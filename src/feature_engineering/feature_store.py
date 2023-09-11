@@ -3,26 +3,16 @@ import pandas as pd
 from great_expectations.core import ExpectationSuite
 from hsfs.feature_group import FeatureGroup
 
-
-# Load env
-from dotenv import load_dotenv
-import os
-
-def load_env_vars() -> dict:
-    load_dotenv(".env-template")
-    load_dotenv(".env", override=True)
-    return dict(os.environ)
+# import utils
+from utils import utils
 
 def to_feature_store(
     data: pd.DataFrame,
     validation_expectation_suite: ExpectationSuite,
     feature_group_version: int,
 ) -> FeatureGroup:
-    # Connect to feature store.
-    project = hopsworks.login(
-        api_key_value=load_env_vars()["FS_API_KEY"], project=load_env_vars()["FS_PROJECT_NAME"]
-    )
-    feature_store = project.get_feature_store()
+
+    feature_store = utils.hopsworks_feature_login()
 
     # Create feature group.
     energy_feature_group = feature_store.get_or_create_feature_group(

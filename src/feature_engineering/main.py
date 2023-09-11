@@ -1,7 +1,5 @@
 import datetime
 from pathlib import Path
-import json
-from json import JSONDecodeError
 from typing import Any, Dict, Tuple, Optional
 import logging
 import pandas as pd
@@ -19,44 +17,7 @@ import seaborn as sns
 # import 
 
 import cleaning, feature_store, validation
-
-logger = logging.getLogger(__name__)
-
-def from_file_url(export_start: datetime.datetime, export_end: datetime.datetime, datetime_format: str="%Y-%m-%d %H:%M",file_path: str="./data/data_for_project.csv") -> Optional[pd.DataFrame]:
-
-    data = pd.read_csv(file_path, delimiter=";")
-    records = data[(data["HourUTC"] >= export_start.strftime(datetime_format)) & (data["HourUTC"] < export_end.strftime(datetime_format))]
-
-    return records
-
-def from_api_url(export_end: datetime.datetime, days_export: int = 30, api_url: str="https://api.energidataservice.dk/dataset/ConsumptionDE35Hour",datetime_format: str="%Y-%m-%dT%H:%M") -> Optional[pd.DataFrame]:
-
-    export_start = export_end - datetime.timedelta(days=days_export)
-
-    query_params = {
-        "offset": 0,
-        "start": export_start.strftime(datetime_format),
-        "end": export_end.strftime(datetime_format),
-        "sort": "HourUTC",
-        "timezone": "utc"
-    }
-    url = URL(api_url) % query_params
-    url = str(url)
-
-    response = requests.get(url)
-    logger.info(f"Response received from API with status code: {response.status_code} ")
-
-    try:
-        response = response.json()
-    except JSONDecodeError:
-        logger.error(f"Response status = {response.status_code}. Could not decode response from API with URL: {url}")
-
-        return None
-
-    records = response["records"]
-    records = pd.DataFrame.from_records(records)
-
-    return records
+from utils import utils
 
 def data_analyst(data: pd):
     # print ("Data Sharp: \n",  data.shape)
@@ -81,15 +42,8 @@ def transform(data: pd.DataFrame):
 
     return data
 
-def save_json(data: dict, file_name: str):
-
-    data_path = Path(file_name) 
-    with open(data_path, "w") as f:
-        json.dump(data, f)
-    
-
 def run(export_start, export_end, datetime_format):
-    data_f = from_file_url(export_start,export_end)
+    data_f = utils.from_file_url(export_start,export_end)
     data_f = transform(data_f)
     feature_group_version = 1
     validation_expectation_suite = validation.build_expectation_suite()
@@ -108,7 +62,7 @@ def run(export_start, export_end, datetime_format):
 
     metadata["feature_group_version"] = feature_group_version
     metadata_name = datetime.datetime.now().strftime("%Y%m%d%H%M") + "_featurecleaning_pipeline.json"
-    save_json(metadata, file_name=metadata_name)
+    utils.save_json(metadata, file_name=metadata_name)
 
     return metadata
 
@@ -120,6 +74,7 @@ if __name__=="__main__":
     export_start = datetime.datetime.strptime("2020-06-30 22:00",datetime_format)
 
     fire.Fire(run(export_start, current, datetime_format))
+    
     
     
 

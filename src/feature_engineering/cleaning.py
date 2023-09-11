@@ -1,10 +1,24 @@
 import pandas as pd
 
-def rename_columns(df: pd.DataFrame) -> pd.DataFrame:
+def delete_missing_data(df: pd.DataFrame) -> pd.DataFrame:
     data = df.copy()
 
     # Drop irrelevant columns.
     data.drop(columns=["HourDK"], inplace=True)
+    data = data.dropna()
+
+    return data
+
+def remove_duplicate(df: pd.DataFrame) -> pd.DataFrame:
+    data = df.copy()
+
+    data = data.drop_duplicates()
+
+    return data
+
+
+def rename_columns(df: pd.DataFrame) -> pd.DataFrame:
+    data = df.copy()
 
     # Rename columns
     data.rename(

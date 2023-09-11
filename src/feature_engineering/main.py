@@ -39,6 +39,8 @@ def transform(data: pd.DataFrame):
     data = cleaning.rename_columns(data)
     data = cleaning.cast_columns(data)
     data = cleaning.encode_area_column(data)
+    data = cleaning.delete_missing_data(data)
+    data = cleaning.remove_duplicate(data)
 
     return data
 

@@ -9,12 +9,6 @@ import fire
 import requests
 from yarl import URL
 
-# data_analyst
-# import matplotlib.pyplot as plt
-# import seaborn as sns
-
-
-# import 
 
 import cleaning, feature_store, validation
 from utils import utils

@@ -2,7 +2,7 @@ import hopsworks
 import pandas as pd
 from great_expectations.core import ExpectationSuite
 from hsfs.feature_group import FeatureGroup
-
+import datetime
 # import utils
 from utils import utils
 
@@ -78,4 +78,11 @@ def to_feature_store(
     energy_feature_group.update_statistics_config()
     energy_feature_group.compute_statistics()
 
-    return energy_feature_group
+    metadata = {
+        "feature_group_name" : energy_feature_group.name,
+        "feature_group_version" :  energy_feature_group.version,
+        "feature_primary_keys" : ["area", "consumer_type"],
+        "time_create_feature": datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+    }
+
+    return metadata

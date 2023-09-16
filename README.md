@@ -10,7 +10,7 @@ Student:
 
 ## Acknowledgement
 
-For idea in project, we would like to acknowledge and appreciate Paul Iusztin for their valuable project idea.
+For idea in project, we would like to acknowledge and appreciate Paul Iusztin for their valuable project idea. His project is powerful and have more feature than us. You can [visit his repository](https://github.com/iusztinpaul/energy-forecasting) to get more experienced
 
 ## Prerequisites
 
@@ -28,3 +28,13 @@ sudo docker compose up
 Notice that you fill all require param for project in [.env](src/utils/.env-template)
 
 
+## Project structure
+
+Project structure have file and directory which are describe below. In each directory, we will explain more detail in them.
+- `docker-compose.yml`:
+- `src`:
+- `model_training`:
+- `feature_engineering`:
+- `data`
+
+<!-- WANDB -->

@@ -164,3 +164,5 @@ db
 
 .idea
 *_featurecleaning_pipeline.json
+feature_group
+feature_view

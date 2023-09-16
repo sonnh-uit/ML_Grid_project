@@ -10,8 +10,8 @@ import requests
 from yarl import URL
 
 # data_analyst
-import matplotlib.pyplot as plt
-import seaborn as sns
+# import matplotlib.pyplot as plt
+# import seaborn as sns
 
 
 # import 
@@ -50,21 +50,16 @@ def run(export_start, export_end, datetime_format):
     feature_group_version = 1
     validation_expectation_suite = validation.build_expectation_suite()
     
-    feature_store.to_feature_store(
+    metadata = feature_store.to_feature_store(
         data_f,
         validation_expectation_suite=validation_expectation_suite,
         feature_group_version=feature_group_version,
     )
     
-    metadata = {
-        "export_start": export_start.strftime("%Y-%m-%d %H:%M"),
-        "export_end": export_end.strftime("%Y-%m-%d %H:%M"),
-        "time_create_feature": datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
-    }
-
-    metadata["feature_group_version"] = feature_group_version
-    metadata_name = datetime.datetime.now().strftime("%Y%m%d%H%M") + "_featurecleaning_pipeline.json"
-    utils.save_json(metadata, file_name=metadata_name)
+    metadata["export_start"] = export_start.strftime("%Y-%m-%d %H:%M")
+    metadata["export_end"] = export_end.strftime("%Y-%m-%d %H:%M")
+    file_name = "./data/metadata/feature_group/" + metadata["feature_group_name"] + "_" + str(metadata["feature_group_version"]) + ".json"
+    utils.save_json(metadata, file_name=file_name)
 
     return metadata
 
@@ -72,21 +67,8 @@ if __name__=="__main__":
 
     # current = datetime.datetime.now()
     datetime_format = "%Y-%m-%d %H:%M"
-    current = datetime.datetime.strptime("2020-10-30 22:00", datetime_format)
-    export_start = datetime.datetime.strptime("2020-06-30 22:00",datetime_format)
+    current = datetime.datetime.strptime("2023-06-30 22:00", datetime_format)
+    export_start = datetime.datetime.strptime("2023-05-30 22:00",datetime_format)
 
     fire.Fire(run(export_start, current, datetime_format))
     
-    
-    
-
-    
-
-    
-    
-    
-
-
-
-
-

@@ -6,24 +6,26 @@ import os
 import datetime
 from typing import Any, Dict, Tuple, Optional
 import pandas as pd
+from pathlib import Path
+import hsfs
 
-logger = logging.getLogger(__name__)
+# logger = getLogger(__name__)
 
 def load_env_vars() -> dict:
     load_dotenv("./utils/.env-template")
     load_dotenv("./utils/.env", override=True)
     return dict(os.environ)
 
-def get_logger(name: str) -> logging.Logger:
+def getLogger(name: str) -> logging.Logger:
 
-    logging.basicConfig(filename='all.log',
-                    level=logging.DEBUG,
+    logging.basicConfig(filename='../all.log',
+                    level=logging.INFO,
                     format='%(asctime)s [%(levelname)s]: %(message)s',
                     datefmt='%Y-%m-%d %H:%M:%S')
 
-    logger = logging.getLogger(name)
+    log = logging.getLogger(name)
 
-    return logger
+    return log
 
 def save_json(data: dict, file_name: str):
     
@@ -74,3 +76,68 @@ def from_api_url(export_end: datetime.datetime, days_export: int = 30, api_url: 
 
     return records
 
+def load_json(data_path: str) -> dict:
+
+    if not data_path.exists():
+        raise FileNotFoundError(f"Cached JSON from {data_path} does not exist.")
+
+    with open(data_path, "r") as f:
+        return json.load(f)
+
+def create_feature_view(fview_name: str, fgroup_ver: int):
+    feature_store = hopsworks_feature_login()
+
+    try:
+        feature_views = feature_store.get_feature_views(name=fview_name)
+    except hsfs.client.exceptions.RestAPIError:
+        print("No feature views found for energy_consumption_denmark_view.")
+
+        feature_views = []
+
+    for feature_view in feature_views:
+        try:
+            feature_view.delete_all_training_datasets()
+        except hsfs.client.exceptions.RestAPIError:
+            print(
+                f"Failed to delete training datasets for feature view {feature_view.name} with version {feature_view.version}."
+            )
+
+        try:
+            feature_view.delete()
+        except hsfs.client.exceptions.RestAPIError:
+            print(
+                f"Failed to delete feature view {feature_view.name} with version {feature_view.version}."
+            )
+
+    feature_group = feature_store.get_feature_group("energy_consumption_denmark", fgroup_ver)
+
+
+
+    feature_view = feature_store.create_feature_view(
+        name=fview_name,
+        query=feature_group.select_all(),
+        labels=[],    
+    )
+
+    metadata = {
+        "feature_group" : feature_group.name,
+        "feature_group_version" : fgroup_ver,
+        "feature_view" : fview_name,
+        "feature_view_version" : feature_view.version,
+        "time_create" : datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+    }
+
+
+    return feature_view, metadata
+
+def create_training_dataset(fgroup_ver: int, fgroup_name: str = "energy_consumption_denmark") -> pd.DataFrame:
+    feature_store = hopsworks_feature_login()
+    try: 
+        feature_group = feature_store.get_feature_group(fgroup_name, fgroup_ver)
+    except:
+        print("Feature group energy_consumption_denmark with version {fgroup_ver} is not exist.")
+        raise 
+
+    dataframe = feature_group.read(wallclock_time=None, online=False, dataframe_type="pandas", read_options={})
+    return dataframe
+    

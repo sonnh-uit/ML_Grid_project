@@ -1,22 +1,22 @@
 version: '3'
 services:
-  # feature_engineering:
-  #   container_name: feature_engineering
-  #   build:
-  #     context: ./feature_engineering
-  #     dockerfile: Dockerfile
-  #   # ports:
-  #   #   - 8080:80
-  #   volumes:
-  #     - ./src/feature_engineering:/app
-  #     - ./src/utils:/app/utils
-  #     - ./data:/app/data
-  #   working_dir: /app
-  #   command: ["python3", "main.py"]
-  #   # command: ["python3", "clean_feature_store.py"]
-  #   # command: ["tail", "-f", "/dev/null"]
-  #   networks:
-  #     - fe-nic
+  feature_engineering:
+    container_name: feature_engineering
+    build:
+      context: ./feature_engineering
+      dockerfile: Dockerfile
+    # ports:
+    #   - 8080:80
+    volumes:
+      - ./src/feature_engineering:/app
+      - ./src/utils:/app/utils
+      - ./data:/app/data
+    working_dir: /app
+    command: ["python3", "main.py"]
+    # command: ["python3", "clean_feature_store.py"]
+    # command: ["tail", "-f", "/dev/null"]
+    networks:
+      - fe-nic
 
   model_training:
     container_name: model_training

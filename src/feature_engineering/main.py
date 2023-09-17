@@ -10,7 +10,7 @@ import requests
 from yarl import URL
 
 
-import cleaning, feature_store, validation
+import cleaning, feature_store, validation, standardize
 from utils import utils
 
 def data_analyst(data: pd):
@@ -40,7 +40,13 @@ def transform(data: pd.DataFrame):
 
 def run(export_start, export_end, datetime_format):
     data_f = utils.from_file_url(export_start,export_end)
+    # Cleaning data
     data_f = transform(data_f)
+
+    # Standardize data
+    data_f = standardize.standardize_data(data_f)
+
+    # Validation
     feature_group_version = 1
     validation_expectation_suite = validation.build_expectation_suite()
     

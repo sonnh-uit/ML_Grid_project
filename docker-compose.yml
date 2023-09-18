@@ -28,11 +28,13 @@ services:
       - ./src/utils:/app/utils
       - ./data:/app/data
     working_dir: /app
-    command: ["python3", "arima.py"]
+    # command: ["python3", "arima.py"]
+    command: ["python3", "save_model.py"]
     networks:
       - fe-nic
     # depends_on:
     #   - feature_engineering
+
 
 volumes:
   data:

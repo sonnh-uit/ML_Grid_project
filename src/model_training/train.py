@@ -59,6 +59,7 @@ def evaluate(test_data,prediction_data,validate_data,prediction_validate_data):
 #     model, metadata = linear_regression("linear_regression", 1)
 #     model_name = "./data/models/" + metadata["dataset_name"] + "_" + str(metadata["dataset_version"]) + ".pkl"
 #     pickle_save_model(model, model_name)
+    # save_model.save_model(model_name,"test_save_arima_model",1)
 
 if __name__=="__main__":
     fire.Fire(run())

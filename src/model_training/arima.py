@@ -9,8 +9,11 @@ from pmdarima.arima import auto_arima
 from sklearn.metrics import mean_squared_error, mean_absolute_error
 import fire
 import json
+import hsml
+
 from utils import utils
 import train
+import save_model
 
 def get_dataset( dataset_name: str, dataset_version: int, fgroup_ver: int=1):
 
@@ -71,8 +74,10 @@ def run():
     }
 
     model_name = "./data/models/" + model_metadata["dataset_name"] + "_" + str(model_metadata["dataset_version"]) + "_"+ model_metadata["model_name"]+".pkl"
-
+    
     model_metadata_name = "./data/models/" + model_metadata["dataset_name"] + "_" + str(model_metadata["dataset_version"]) + "_"+model_metadata["model_name"]+".json"
+
+
 
     train.pickle_save_model(model, model_name)
     utils.save_json(model_metadata, model_metadata_name)

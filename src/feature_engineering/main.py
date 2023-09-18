@@ -10,7 +10,7 @@ import requests
 from yarl import URL
 
 
-import cleaning, feature_store, validation, standardize
+import cleaning, feature_store, validation, standardize, vectorize
 from utils import utils
 
 def data_analyst(data: pd):
@@ -45,6 +45,9 @@ def run(export_start, export_end, datetime_format):
 
     # Standardize data
     data_f = standardize.standardize_data(data_f)
+
+    # Vectorize data
+    data_f = vectorize.vectorize_data(data_f)
 
     # Validation
     feature_group_version = 1

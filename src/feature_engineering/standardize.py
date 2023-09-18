@@ -1,5 +1,5 @@
 import pandas as pd
-from StandardScaler import sklearn.preprocessing
+from sklearn.preprocessing import StandardScaler
 
 def standardize_data(data: pd.DataFrame):
     # define standard scaler

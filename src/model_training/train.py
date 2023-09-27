@@ -20,7 +20,6 @@ from utils import utils
 logger = utils.getLogger(__name__)
 
 def split_dataset(dataset: pd.DataFrame, test_size: int=1, valid_size: int=0.1):
-
     test_split_idx = int(dataset.shape[0] * (1-test_size))
     valid_split_idx = int(dataset.shape[0] * (1-(valid_size+test_size)))
 
@@ -28,8 +27,8 @@ def split_dataset(dataset: pd.DataFrame, test_size: int=1, valid_size: int=0.1):
 
 
 def pickle_save_model(model, model_path: str):
-
     return pickle.dump(model, open(model_path, 'wb'))
+
 
 def evaluate(test_data,prediction_data,validate_data,prediction_validate_data):
 
@@ -62,10 +61,7 @@ def evaluate(test_data,prediction_data,validate_data,prediction_validate_data):
 
 # def run():
 
-#     model, metadata = linear_regression("linear_regression", 1)
-#     model_name = "./data/models/" + metadata["dataset_name"] + "_" + str(metadata["dataset_version"]) + ".pkl"
-#     pickle_save_model(model, model_name)
-    # save_model.save_model(model_name,"test_save_arima_model",1)
+    
 
 if __name__=="__main__":
     fire.Fire(run())

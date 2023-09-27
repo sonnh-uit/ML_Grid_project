@@ -37,11 +37,11 @@ def get_dataset( dataset_name: str, dataset_version: int, fgroup_ver: int=1):
     return train_data, test_data, valid_data, dataset_metadata
     
 def arima(train_data: pd.DataFrame, test_data: pd.DataFrame, valid_data: pd.DataFrame):
-    x_train = np.array(train_data.index).reshape(-1, 1)
-    y_train = np.array(train_data['energy_consumption'])
-    
-    
+    train_column = "energy_consumption"
 
+    x_train = np.array(train_data.index).reshape(-1, 1)
+    y_train = np.array(train_data[train_column])
+    
     # This block bellow to get bes model metric order, the result 
     # is Best model:  ARIMA(5,0,0)(0,0,0)[0] intercept
     start = datetime.datetime.now()
@@ -61,7 +61,6 @@ def arima(train_data: pd.DataFrame, test_data: pd.DataFrame, valid_data: pd.Data
 
     train_metadata = {
         "time_to_train" : train_time.total_seconds(),
-        # "model_order": int("".join([str(item) for item in model_order])),
         "model_order" : model_order,
         "aic": model.aic,
         "bic": model.bic,
@@ -72,17 +71,34 @@ def arima(train_data: pd.DataFrame, test_data: pd.DataFrame, valid_data: pd.Data
 
     return model, train_metadata
 
+def model_evaluate(model: ARIMA, train_data: pd.DataFrame, test_data: pd.DataFrame, valid_data: pd.DataFrame):
+    train_column = "energy_consumption"
+
+    x_test = np.array(test_data.index).reshape(-1, 1)
+    y_test = np.array(test_data[train_column])
+    y_pred = model.predict(start=int(x_test[0]), end=int(len(x_test)+x_test[0]-1))
+
+    x_val= np.array(valid_data.index).reshape(-1, 1)
+    y_val = np.array(valid_data[train_column])
+    y_pred_val =  model.predict(start=int(x_val[0]), end=int(len(x_val)+x_val[0]-1))
+
+    evaluate_result = train.evaluate(y_test,y_pred,y_val,y_pred_val)
+    return evaluate_result
+
 def run():
     
     train_data, test_data, valid_data, dataset_metadata = get_dataset("arima", 1, 1)
     model, train_metadata = arima( train_data, test_data, valid_data)
-    
+    evaluate = model_evaluate(model,train_data, test_data, valid_data)
+
     model_name = "./data/models/" + dataset_metadata["dataset_name"] + "_" + str(dataset_metadata["dataset_version"]) + "_arima.pkl"
     
     model_metadata_name = "./data/models/" + dataset_metadata["dataset_name"] + "_" + str(dataset_metadata["dataset_version"]) + "_arima.json"
+    model_evaluate_name = "./data/models/eval_" + dataset_metadata["dataset_name"] + "_" + str(dataset_metadata["dataset_version"]) + "_arima.json"
 
     train.pickle_save_model(model, model_name)
     utils.save_json(train_metadata, model_metadata_name)
+    utils.save_json(evaluate, model_evaluate_name)
     # utils.save_json(model_description, model_description_name)
 
 if __name__=="__main__":

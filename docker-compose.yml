@@ -5,8 +5,6 @@ services:
     build:
       context: ./feature_engineering
       dockerfile: Dockerfile
-    # ports:
-    #   - 8080:80
     volumes:
       - ./src/feature_engineering:/app
       - ./src/utils:/app/utils
@@ -28,8 +26,8 @@ services:
       - ./src/utils:/app/utils
       - ./data:/app/data
     working_dir: /app
-    # command: ["python3", "arima.py"]
-    command: ["python3", "deploy.py"]
+    command: ["python3", "arima.py"]
+    # command: ["python3", "deploy.py"]
     networks:
       - fe-nic
     # depends_on:

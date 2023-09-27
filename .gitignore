@@ -168,3 +168,5 @@ feature_group
 feature_view
 wandb
 *.pkl
+
+data/models/*.json

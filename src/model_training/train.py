@@ -1,3 +1,9 @@
+# =========================================
+# Date    : 2023-09-25 10:27:01
+# Author  : Son Nguyen-Hong (sonnh.uit@gmail.com)
+# Link    : sonnh.net
+# =========================================
+
 import pandas as pd
 import hopsworks
 import fire
@@ -48,7 +54,7 @@ def evaluate(test_data,prediction_data,validate_data,prediction_validate_data):
         "validate_result" : {
             "mean_absolute_error" : val_mae,
             "mean_absolute_percentage_error" : val_mape,
-             "root_mean_squared_error" : val_rmse
+            "root_mean_squared_error" : val_rmse
         }
     }
 

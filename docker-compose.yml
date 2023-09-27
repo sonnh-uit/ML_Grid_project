@@ -29,7 +29,7 @@ services:
       - ./data:/app/data
     working_dir: /app
     # command: ["python3", "arima.py"]
-    command: ["python3", "save_model.py"]
+    command: ["python3", "deploy.py"]
     networks:
       - fe-nic
     # depends_on:

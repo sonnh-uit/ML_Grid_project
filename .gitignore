@@ -166,3 +166,5 @@ db
 *_featurecleaning_pipeline.json
 feature_group
 feature_view
+wandb
+*.pkl

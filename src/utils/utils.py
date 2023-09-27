@@ -8,7 +8,9 @@ from typing import Any, Dict, Tuple, Optional
 import pandas as pd
 from pathlib import Path
 import hsfs
+import hsml
 
+import wandb
 # logger = getLogger(__name__)
 
 def load_env_vars() -> dict:
@@ -33,12 +35,9 @@ def save_json(data: dict, file_name: str):
     with open(data_path, "w") as f:
         json.dump(data, f)
 
-def hopsworks_model_registry_login():
-    project = hopsworks.login(
-        api_key_value=load_env_vars()["FS_API_KEY"], project=load_env_vars()["FS_PROJECT_NAME"]
-    )
+def wandb_login():
+    return wandb.login(key=load_env_vars()["WANDB_API_KEY"])
 
-    return project.get_model_registry()
 
 def hopsworks_feature_login ():
     project = hopsworks.login(
@@ -85,8 +84,6 @@ def from_api_url(export_end: datetime.datetime, days_export: int = 30, api_url: 
 
 def load_json(data_path: str) -> dict:
 
-    if not data_path.exists():
-        raise FileNotFoundError(f"Cached JSON from {data_path} does not exist.")
 
     with open(data_path, "r") as f:
         return json.load(f)

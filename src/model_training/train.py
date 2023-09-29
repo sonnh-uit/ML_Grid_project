@@ -5,11 +5,12 @@
 # =========================================
 
 import pandas as pd
+import numpy as np
 import hopsworks
 import fire
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
-from sklearn.metrics import mean_squared_error as mse, mean_absolute_error as mae, r2_score as r2
+from sklearn.metrics import mean_squared_error, mean_absolute_error , r2_score as r2
 import pickle 
 import hsfs
 import datetime
@@ -19,7 +20,7 @@ from utils import utils
 
 logger = utils.getLogger(__name__)
 
-def split_dataset(dataset: pd.DataFrame, test_size: int=1, valid_size: int=0.1):
+def split_dataset(dataset: pd.DataFrame, test_size: int=0.2, valid_size: int=0.1):
     test_split_idx = int(dataset.shape[0] * (1-test_size))
     valid_split_idx = int(dataset.shape[0] * (1-(valid_size+test_size)))
 
@@ -32,7 +33,7 @@ def pickle_save_model(model, model_path: str):
 
 def evaluate(test_data,prediction_data,validate_data,prediction_validate_data):
 
-    mean_absolute_error = mean_absolute_error(test_data, prediction_data)
+    test_mae = mean_absolute_error(test_data, prediction_data)
     test_ape = np.abs((test_data - prediction_data) / test_data)
     test_mape = np.mean(test_ape) * 100
     test_mse = mean_squared_error(test_data, prediction_data)
@@ -46,7 +47,7 @@ def evaluate(test_data,prediction_data,validate_data,prediction_validate_data):
     
     metadata = {
         "test_result" : {
-            "mean_absolute_error" : mean_absolute_error,
+            "mean_absolute_error" : test_mae,
             "mean_absolute_percentage_error" : test_mape,
             "root_mean_squared_error" : test_rmse,
         },

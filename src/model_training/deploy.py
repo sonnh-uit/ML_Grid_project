@@ -36,12 +36,13 @@ def run():
     # Begin deploy model, model metric must be save as json with just string or number
     utils.wandb_login()
     model_path = "./data/models/arima_1_arima.pkl"
-    model_metric = utils.load_json("./data/models/arima_1_arima.json")
+
+    model_train = utils.load_json("./data/models/arima_1_arima.json")
+    model_evaluate = utils.load_json("./data/models/eval_arima_1_arima.json")
+    model_metric = {**model_train, **model_evaluate}
     model_version = 1
-
-
-    model_metric["version"] = model_version
     model_deploy(model_path, model_metric)
+    print(model_metric)
     
     
 

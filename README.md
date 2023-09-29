@@ -27,7 +27,6 @@ sudo docker compose up
 ```
 Notice that you fill all require param for project in [.env](src/utils/.env-template)
 
-
 ## Project structure
 
 Project structure have file and directory which are describe below. In each directory, we will explain more detail in them.
@@ -36,5 +35,3 @@ Project structure have file and directory which are describe below. In each dire
 - `model_training`:
 - `feature_engineering`:
 - `data`
-
-<!-- WANDB -->

@@ -5,8 +5,6 @@ services:
     build:
       context: ./feature_engineering
       dockerfile: Dockerfile
-    # ports:
-    #   - 8080:80
     volumes:
       - ./src/feature_engineering:/app
       - ./src/utils:/app/utils

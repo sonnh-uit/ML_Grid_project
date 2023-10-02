@@ -13,6 +13,5 @@ def create_feature_1(df: pd.DataFrame) -> pd.DataFrame:
   
     data['hour'] = pd.to_datetime(data['datetime_utc']).dt.hour
     data['avg_energy_per_area'] = data.groupby('area')['energy_consumption'].transform('mean')
-    # data['total_energy_per_consumer_type'] = data.groupby('consumer_type')['energy_consumption'].transform('sum')
  
     return data

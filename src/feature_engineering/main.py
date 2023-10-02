@@ -1,3 +1,11 @@
+# =========================================
+# Date    : 2023-09-30 14:41:55
+# Author  : Son Nguyen-Hong (sonnh.uit@gmail.com)
+# Link    : sonnh.net
+# File    : main.py
+# =========================================
+
+
 import datetime
 from pathlib import Path
 from typing import Any, Dict, Tuple, Optional
@@ -10,24 +18,8 @@ import requests
 from yarl import URL
 
 
-import cleaning, feature_store, validation, standardize, vectorize
+import cleaning, feature_store, validation, standardize, vectorize, create_feature_1
 from utils import utils
-
-def data_analyst(data: pd):
-    # print ("Data Sharp: \n",  data.shape)
-    # print ("Data Describe: \n",  data.describe())
-
-    # plt.figure(figsize=(8,5))
-    # sns.histplot(data['PriceArea'], kde=True)
-    # plt.title('Price area', fontsize=20)
-    # plt.savefig('PriceArea.png')
-    # plt.close()
-
-    # data = pd.get_dummies(data)
-    print(data.isnull().sum())
-    print(data.columns)
-
-
 
 def transform(data: pd.DataFrame):
     data = cleaning.rename_columns(data)
@@ -38,25 +30,35 @@ def transform(data: pd.DataFrame):
 
     return data
 
-def run(export_start, export_end, datetime_format):
+def run(feature: dict):
+    datetime_format = feature['datetime_format']
+    feature_name = feature['name']
+    fgroup_version = feature['fgroup_version']
+    export_start = datetime.datetime.strptime(feature['export_start'],datetime_format)
+    export_end = datetime.datetime.strptime(feature['export_end'], datetime_format)
+    feature_code = feature['feature_code']
+    description = feature['description']
+
+
     data_f = utils.from_file_url(export_start,export_end)
-    # Cleaning data
     data_f = transform(data_f)
-
-    # Standardize data
-    data_f = standardize.standardize_data(data_f)
-
-    # Vectorize data
-    data_f = vectorize.vectorize_data(data_f)
-
-    # Validation
-    feature_group_version = 1
-    validation_expectation_suite = validation.build_expectation_suite()
+    
+    # data_f = standardize.standardize_data(data_f)
+    # data_f = vectorize.vectorize_data(data_f)
+    if feature_code == 0 :
+        validation_expectation_suite = validation.build_expectation_suite(feature_name)
+    elif feature_code == 1:
+        data_f = create_feature_1.create_feature_1(data_f)
+        validation_expectation_suite = validation.build_expectation_feature_1(feature_name)
     
     metadata = feature_store.to_feature_store(
+        feature_name,
+        feature_code,
         data_f,
+        description,
         validation_expectation_suite=validation_expectation_suite,
-        feature_group_version=feature_group_version,
+        feature_group_version=fgroup_version,
+        
     )
     
     metadata["export_start"] = export_start.strftime("%Y-%m-%d %H:%M")
@@ -68,10 +70,6 @@ def run(export_start, export_end, datetime_format):
 
 if __name__=="__main__":
 
-    # current = datetime.datetime.now()
-    datetime_format = "%Y-%m-%d %H:%M"
-    current = datetime.datetime.strptime("2023-06-30 22:00", datetime_format)
-    export_start = datetime.datetime.strptime("2023-05-30 22:00",datetime_format)
-
-    fire.Fire(run(export_start, current, datetime_format))
-    
+    feature_groups = utils.load_yaml_env()
+    for feature in feature_groups['feature_store']:
+        fire.Fire(run(feature))

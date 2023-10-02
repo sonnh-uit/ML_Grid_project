@@ -1,0 +1,29 @@
+# =========================================
+# Date    : 2023-09-30 14:42:36
+# Author  : Son Nguyen-Hong (sonnh.uit@gmail.com)
+# Link    : sonnh.net
+# File    : variables.yaml
+# =========================================
+---
+feature_store:
+  - name: energy_consumption_denmark_1month
+    datetime_format: "%Y-%m-%d %H:%M"
+    export_start: "2023-05-30 22:00"
+    export_end: "2023-06-30 22:00"
+    fgroup_version: 1
+    feature_code: 0
+    description: "This is 1 month consumption with no change"
+  - name: energy_consumption_denmark_1year
+    datetime_format: "%Y-%m-%d %H:%M"
+    export_start: "2022-05-30 22:00"
+    export_end: "2023-05-30 22:00"
+    fgroup_version: 1
+    feature_code: 0
+    description: "This is 1 month consumption with no change"
+  - name: energy_consumption_new_feature
+    datetime_format: "%Y-%m-%d %H:%M"
+    export_start: "2022-05-30 22:00"
+    export_end: "2023-05-30 22:00"
+    fgroup_version: 1
+    feature_code: 1
+    description: "This is 1 year consumption with adding hour, avg per area"

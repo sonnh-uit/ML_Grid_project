@@ -8,5 +8,3 @@ def standardize_data(data: pd.DataFrame):
     # transform data
     df_standardize = scaler.fit_transform(df_dropcolunm)
     return df_standardize
-
-

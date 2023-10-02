@@ -3,12 +3,11 @@ import hopsworks
 
 import feature_store
 
-# import utils
 from utils import utils
 
-def clean():
+def clean(feature: dict):
     fs = utils.hopsworks_feature_login()
-
+    feature_group = feature['name']
     print("Deleting feature views and training datasets...")
     try:
         feature_views = fs.get_feature_views(name="energy_consumption_denmark_view")
@@ -23,7 +22,7 @@ def clean():
 
     print("Deleting feature groups...")
     try:
-        feature_groups = fs.get_feature_groups(name="energy_consumption_denmark")
+        feature_groups = fs.get_feature_groups(name=feature_group)
         for feature_group in feature_groups:
             try:
                 feature_group.delete()
@@ -34,4 +33,6 @@ def clean():
 
 
 if __name__ == "__main__":
-    fire.Fire(clean)
+    feature_groups = utils.load_yaml_env()
+    for feature in feature_groups['feature_store']:
+        fire.Fire(clean(feature))

@@ -9,7 +9,7 @@ import pandas as pd
 from pathlib import Path
 import hsfs
 import hsml
-
+import yaml
 import wandb
 # logger = getLogger(__name__)
 
@@ -50,7 +50,6 @@ def from_file_url(export_start: datetime.datetime, export_end: datetime.datetime
     
     data = pd.read_csv(file_path, delimiter=";")
     records = data[(data["HourUTC"] >= export_start.strftime(datetime_format)) & (data["HourUTC"] < export_end.strftime(datetime_format))]
-
     return records
 
 def from_api_url(export_end: datetime.datetime, days_export: int = 30, api_url: str="https://api.energidataservice.dk/dataset/ConsumptionDE35Hour",datetime_format: str="%Y-%m-%dT%H:%M") -> Optional[pd.DataFrame]:
@@ -144,4 +143,10 @@ def create_training_dataset(fgroup_ver: int, fgroup_name: str = "energy_consumpt
 
     dataframe = feature_group.read(wallclock_time=None, online=False, dataframe_type="pandas", read_options={})
     return dataframe
+
+
+def load_yaml_env(file_path: str='./utils/variables.yaml') -> dict:
+    with open(file_path, 'r') as file:
+        data = yaml.safe_load(file)
+    return data
     

@@ -135,10 +135,10 @@ def create_feature_view(fview_name: str, fgroup_ver: int):
 
 def create_training_dataset(fgroup_ver: int, fgroup_name: str = "energy_consumption_denmark") -> pd.DataFrame:
     feature_store = hopsworks_feature_login()
-    try: 
+    try:
         feature_group = feature_store.get_feature_group(fgroup_name, fgroup_ver)
     except:
-        print("Feature group energy_consumption_denmark with version {fgroup_ver} is not exist.")
+        print("Feature group {fgroup_name} with version {fgroup_ver} is not exist.")
         raise 
 
     dataframe = feature_group.read(wallclock_time=None, online=False, dataframe_type="pandas", read_options={})

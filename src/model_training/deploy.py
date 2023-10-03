@@ -10,41 +10,46 @@ import hopsworks
 import hopsworks
 import wandb
 import random
-
+import time
 from utils import utils
 
 
-def model_deploy(model_path: str, model_metric: dict):
+def model_deploy(model_config: dict):
     
+    model_root_directory = "./data/models/"
+    model_path = model_root_directory + model_config['name'] + ".pkl"
+    train_result_path = model_root_directory + model_config['name'] + ".json"
+    evaluate_result_path = model_root_directory + model_config['name'] + "_eval.json"
+
+    train_result = utils.load_json(train_result_path)
+    evaluate_result = utils.load_json(evaluate_result_path)
+    model_metric = {**train_result, **evaluate_result}
+
+
     PROJECT_NAME = utils.load_env_vars()["WANDB_PROJECT"]
     run = wandb.init(project=PROJECT_NAME)
 
     model = wandb.Artifact(
-        "first_test_energy_consumer",
+        model_config['name'],
         type = "model",
-        description = "This is first test for upload model to wandb",
+        description = model_config['model_description'],
         metadata = model_metric,
     )
-    model.add_file(model_path)
 
+    model.add_file(model_path)
     run.log_artifact(model)
     run.finish()
 
 
-def run():
+def run(model: dict):
     # ARIMA MODEL
-    # Begin deploy model, model metric must be save as json with just string or number
     utils.wandb_login()
-    model_path = "./data/models/arima_1_arima.pkl"
-
-    model_train = utils.load_json("./data/models/arima_1_arima.json")
-    model_evaluate = utils.load_json("./data/models/eval_arima_1_arima.json")
-    model_metric = {**model_train, **model_evaluate}
-    model_version = 1
-    model_deploy(model_path, model_metric)
-    print(model_metric)
-    
-    
-
+    model_deploy(model)
+ 
 if __name__=="__main__":
-    fire.Fire(run())
+    models = utils.load_yaml_env()
+    for model in models['model_training']:
+        # if model['name'].startswith('arima'):
+        fire.Fire(run(model))
+        time.sleep(30)
+

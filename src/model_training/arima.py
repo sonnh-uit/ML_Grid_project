@@ -16,26 +16,29 @@ import fire
 import json
 import hsml
 from hsml.model_schema import ModelSchema
+import time
+
 from utils import utils
 import train
 
 
-def get_dataset( dataset_name: str, dataset_version: int, fgroup_ver: int=1):
+def get_dataset( fgroup_name: str, fgroup_ver: int,ds_test_size, ds_valid_size):
 
-    dataset = utils.create_training_dataset(fgroup_ver)
+    dataset = utils.create_training_dataset(fgroup_ver, fgroup_name)
     dataset["datetime_utc"] = pd.to_datetime(dataset.datetime_utc)
 
+    print(dataset.head())
+
     dataset_metadata = {
-        "feature_group_name" : "energy_consumption_denmark",
+        "feature_group_name" : fgroup_name,
         "feature_group_version" : fgroup_ver,
-        "dataset_name" : dataset_name, 
-        "dataset_version" : dataset_version
     }
 
-    train_data, test_data, valid_data = train.split_dataset(dataset)
+    train_data, test_data, valid_data = train.split_dataset(dataset,ds_test_size,ds_valid_size)
     return train_data, test_data, valid_data, dataset_metadata
     
 def arima(train_data: pd.DataFrame):
+
     train_column = "energy_consumption"
 
     x_train = np.array(train_data.index).reshape(-1, 1)
@@ -86,22 +89,33 @@ def model_evaluate(model: ARIMA, test_data: pd.DataFrame, valid_data: pd.DataFra
     evaluate_result = train.evaluate(y_test,y_pred,y_val,y_pred_val)
     return evaluate_result
 
-def run():
+def run(model: dict):
     
-    train_data, test_data, valid_data, dataset_metadata = get_dataset("arima", 1, 1)
-    model, train_metadata = arima( train_data)
-    evaluate = model_evaluate(model, test_data, valid_data)
+    fgroup_name = model['fgroup_name'] 
+    fgroup_ver =  model['fgroup_version']
+    ds_test_size = model['ds_test_size']
+    ds_valid_size = model['ds_valid_size']
 
-    model_name = "./data/models/" + dataset_metadata["dataset_name"] + "_" + str(dataset_metadata["dataset_version"]) + "_arima.pkl"
-    
-    model_metadata_name = "./data/models/" + dataset_metadata["dataset_name"] + "_" + str(dataset_metadata["dataset_version"]) + "_arima.json"
-    model_evaluate_name = "./data/models/eval_" + dataset_metadata["dataset_name"] + "_" + str(dataset_metadata["dataset_version"]) + "_arima.json"
+    train_data, test_data, valid_data, dataset_metadata = get_dataset(fgroup_name, fgroup_ver,ds_test_size,ds_valid_size)
+    model_trained, train_metadata = arima( train_data)
+    evaluate = model_evaluate(model_trained, test_data, valid_data)
 
-    train.pickle_save_model(model, model_name)
-    utils.save_json(train_metadata, model_metadata_name)
-    utils.save_json(evaluate, model_evaluate_name)
+    model_root_directory = "./data/models/"
+
+    model_name = model['name'] + ".pkl"
+    model_metadata_name = model['name'] + ".json"
+    model_evaluate_name = model['name'] + "_eval.json"
+
+    train.pickle_save_model(model_trained, model_root_directory + model_name)
+    utils.save_json(train_metadata, model_root_directory + model_metadata_name)
+    utils.save_json(evaluate, model_root_directory + model_evaluate_name)
 
 if __name__=="__main__":
-    fire.Fire(run())
+    models = utils.load_yaml_env()
+    for model in models['model_training']:
+        if model['name'].startswith('arima'):
+            fire.Fire(run(model))
+            time.sleep(30)
+            # print(model['name'] + ".pkl") 
   
     

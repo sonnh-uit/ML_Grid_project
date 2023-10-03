@@ -41,6 +41,16 @@
             "name": "energy_consumption",
             "description": "Total electricity consumption in kWh.",
             "validation_rules": ">=0 (float)"
+        },
+        {
+            "name": "hour",
+            "description": "Hour interval in UTC when the data was observed",
+            "validation_rules": ">=0 and <23"
+        },
+        {
+            "name": "avg_energy_per_area",
+            "description": "Average consumption per area",
+            "validation_rules": ">=0, not null, float64"
         }
     ]
 }

@@ -26,4 +26,27 @@ feature_store:
     export_end: "2023-05-30 22:00"
     fgroup_version: 1
     feature_code: 1
+
     description: "This is 1 year consumption with adding hour, avg per area"
+  - name: full_time_feature_store
+    datetime_format: "%Y-%m-%d %H:%M"
+    export_start: "2020-06-30 22:00"
+    export_end: "2023-06-30 21:00"
+    fgroup_version: 1
+    feature_code: 0
+    description: "This is 3 years consumption with no change"
+model_training:
+  - name: arima_with_energy_consumption_denmark_1month
+    fgroup_name: energy_consumption_denmark_1month
+    fgroup_version: 1
+    ds_test_size: 0.2
+    ds_valid_size: 0.1
+    model_description: Arima model forecast with dataset 1 month
+  - name: arima_with_energy_consumption_denmark_1year
+    fgroup_name: energy_consumption_denmark_1year
+    fgroup_version: 1
+    ds_test_size: 0.2
+    ds_valid_size: 0.1
+    model_description: Arima model forecast with dataset 1 year
+    description: "This is 1 year consumption with adding hour, avg per area"
+

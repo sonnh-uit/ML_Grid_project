@@ -147,7 +147,7 @@ def build_expectation_feature_1(expec_name) -> ExpectationSuite:
                     "energy_consumption",
                     "hour",
                     "avg_energy_per_area"
-                    # "total_energy_per_consumer_type"
+
                 ]
             },
         )
